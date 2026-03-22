@@ -29,7 +29,7 @@ import org.apache.comet.CometSparkSessionExtensions.withInfo
 import org.apache.comet.expressions.{CometCast, CometEvalMode}
 import org.apache.comet.serde.{CommonStringExprs, Compatible, ExprOuterClass, Incompatible}
 import org.apache.comet.serde.ExprOuterClass.{BinaryOutputStyle, Expr}
-import org.apache.comet.serde.QueryPlanSerde.exprToProtoInternal
+import org.apache.comet.serde.QueryPlanSerde.{exprToProtoInternal, optExprWithInfo, scalarFunctionExprToProtoWithReturnType}
 
 /**
  * `CometExprShim` acts as a shim for parsing expressions from different Spark versions.
@@ -112,6 +112,28 @@ trait CometExprShim extends CommonStringExprs {
 //        val childExprs = wb.children.map(exprToProtoInternal(_, inputs, binding))
 //        val optExpr = scalarFunctionExprToProto("width_bucket", childExprs: _*)
 //        optExprWithInfo(optExpr, wb, wb.children: _*)
+
+      case mn: MonthName =>
+        val childExpr = exprToProtoInternal(mn.child, inputs, binding)
+        val formatExpr = exprToProtoInternal(Literal("%b"), inputs, binding)
+        val optExpr = scalarFunctionExprToProtoWithReturnType(
+          "to_char",
+          StringType,
+          false,
+          childExpr,
+          formatExpr)
+        optExprWithInfo(optExpr, mn, mn.child)
+
+      case dn: DayName =>
+        val childExpr = exprToProtoInternal(dn.child, inputs, binding)
+        val formatExpr = exprToProtoInternal(Literal("%a"), inputs, binding)
+        val optExpr = scalarFunctionExprToProtoWithReturnType(
+          "to_char",
+          StringType,
+          false,
+          childExpr,
+          formatExpr)
+        optExprWithInfo(optExpr, dn, dn.child)
 
       case _ => None
     }
