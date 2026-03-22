@@ -51,20 +51,20 @@ trait CometExprShim extends CommonStringExprs {
   }
 
   def versionSpecificExprToProtoInternal(
-    expr: Expression,
-    inputs: Seq[Attribute],
-    binding: Boolean): Option[Expr] = {
+      expr: Expression,
+      inputs: Seq[Attribute],
+      binding: Boolean): Option[Expr] = {
     expr match {
       case s: StaticInvoke
-        if s.staticObject == classOf[StringDecode] &&
-          s.dataType.isInstanceOf[StringType] &&
-          s.functionName == "decode" &&
-          s.arguments.size == 4 &&
-          s.inputTypes == Seq(
-            BinaryType,
-            StringTypeWithCollation(supportsTrimCollation = true),
-            BooleanType,
-            BooleanType) =>
+          if s.staticObject == classOf[StringDecode] &&
+            s.dataType.isInstanceOf[StringType] &&
+            s.functionName == "decode" &&
+            s.arguments.size == 4 &&
+            s.inputTypes == Seq(
+              BinaryType,
+              StringTypeWithCollation(supportsTrimCollation = true),
+              BooleanType,
+              BooleanType) =>
         val Seq(bin, charset, _, _) = s.arguments
         stringDecode(expr, charset, bin, inputs, binding)
 
