@@ -290,12 +290,12 @@
 - [x] /
 - [x] abs
 - [x] acos
-- [ ] acosh
+- [x] acosh
 - [x] asin
-- [ ] asinh
+- [x] asinh
 - [x] atan
 - [x] atan2
-- [ ] atanh
+- [x] atanh
 - [ ] bin
 - [ ] bround
 - [ ] cbrt
